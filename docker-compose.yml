@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: fpa_postgres
+    environment:
+      POSTGRES_USER: fpa_user
+      POSTGRES_PASSWORD: fpa_password
+      POSTGRES_DB: fpa_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
