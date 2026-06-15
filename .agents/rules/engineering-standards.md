@@ -1,0 +1,5 @@
+﻿- Python: full type hints. Services pure & testable.
+- Write pytest tests for EVERY service function, especially finance logic.
+- After finishing a module, write an ADR in docs/adr/ explaining key choices.
+- Comments in English, only where logic is non-obvious.
+- Small, reviewable commits - one module per commit.
