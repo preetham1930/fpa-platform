@@ -9,7 +9,6 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
-import type { TooltipProps } from 'recharts';
 
 interface VarianceItem {
   department: string;
@@ -28,12 +27,12 @@ interface VarianceReport {
 }
 
 // Custom Tooltip component for Recharts
-const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="custom-tooltip">
         <div className="tooltip-title">{label}</div>
-        {payload.map((entry, index) => (
+        {payload.map((entry: any, index: number) => (
           <div key={index} className="tooltip-item">
             <span className="label" style={{ color: entry.color }}>{entry.name}:</span>
             <span className="value numeric">
@@ -59,7 +58,8 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<VarianceReport>('http://localhost:8000/variance?period=1');
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const response = await axios.get<VarianceReport>(`${apiUrl}/variance?period=1`);
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);

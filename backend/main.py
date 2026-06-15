@@ -16,8 +16,8 @@ app = FastAPI(title="FP&A Platform API")
 # Allow frontend to connect
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For local development
-    allow_credentials=True,
+    allow_origins=["*"],  # For public read-only demo
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
