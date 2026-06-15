@@ -1,18 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-color: #0f1115;
-  --panel-bg: #181b21;
-  --text-main: #e2e8f0;
-  --text-muted: #94a3b8;
-  --border-color: #2e3643;
-  --accent-color: #3b82f6;
-  --favorable: #10b981;
-  --favorable-bg: rgba(16, 185, 129, 0.1);
-  --unfavorable: #ef4444;
-  --unfavorable-bg: rgba(239, 68, 68, 0.1);
-  --neutral: #64748b;
-  --font-family: 'Inter', sans-serif;
+  --bg: #F5F1EB;            /* warm sand */
+  --surface: #FFFFFF;
+  --border: #E9E2D7;        /* warm hairline - NOT gray */
+  --text: #211C16;          /* warm espresso - NOT cold black */
+  --text-muted: #6B6155;    /* warm taupe - NOT cold gray */
+  --text-hint: #9A9082;
+  --accent: #C68A2E;        /* muted amber gold - NOT metallic */
+  --accent-soft: #FBF1DD;
+  --favorable: #3E7A5E;
+  --favorable-bg: #ECF3EF;
+  --unfavorable: #B0392C;
+  --unfavorable-bg: #F8ECE8;
+  --bar-budget: #D6CDBE;
+  --bar-actual: #332E26;
+  --radius: 16px;
+  
+  --font-heading: 'Fraunces', serif;
+  --font-body: 'Inter', sans-serif;
 }
 
 * {
@@ -22,56 +28,104 @@
 }
 
 body {
-  font-family: var(--font-family);
-  background-color: var(--bg-color);
-  color: var(--text-main);
+  font-family: var(--font-body);
+  background-color: var(--bg);
+  color: var(--text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--text);
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
 }
 
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 3rem 2rem;
 }
 
 .header {
   margin-bottom: 2rem;
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  align-items: baseline;
+  gap: 1.5rem;
 }
 
 .header h1 {
-  font-size: 1.75rem;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  color: #fff;
+  font-size: 2.25rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .period-badge {
-  background: var(--border-color);
-  padding: 0.25rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.35rem 1rem;
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-muted);
 }
 
+/* KPI Summary Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.kpi-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+}
+
+.kpi-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.kpi-value {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.kpi-subtext {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .panel {
-  background-color: var(--panel-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .panel-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  letter-spacing: -0.01em;
 }
 
 /* Table Styles */
@@ -86,25 +140,28 @@ table {
 }
 
 th {
-  padding: 1rem;
-  border-bottom: 2px solid var(--border-color);
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border);
   font-size: 0.95rem;
   vertical-align: middle;
 }
 
+tbody tr {
+  transition: background-color 0.15s ease;
+}
+
 tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.02);
-  transition: background-color 0.2s ease;
+  background-color: var(--bg);
 }
 
 .number-col {
@@ -115,11 +172,12 @@ tbody tr:hover {
 .status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.6rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .favorable {
@@ -141,18 +199,59 @@ tbody tr:hover {
 }
 
 .unfavorable-row {
-  background-color: rgba(239, 68, 68, 0.03);
+  background-color: rgba(176, 57, 44, 0.04);
+}
+
+.unfavorable-row:hover {
+  background-color: rgba(176, 57, 44, 0.08);
 }
 
 .neutral {
-  color: var(--neutral);
+  color: var(--text-muted);
 }
 
 /* Chart Styles */
 .chart-container {
   width: 100%;
-  height: 400px;
+  height: 350px;
   margin-top: 1rem;
+}
+
+/* Custom Tooltip */
+.custom-tooltip {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(33, 28, 22, 0.08);
+}
+
+.tooltip-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.25rem;
+}
+
+.tooltip-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.tooltip-item .label {
+  color: var(--text-muted);
+}
+
+.tooltip-item .value {
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 .loading {
@@ -162,4 +261,5 @@ tbody tr:hover {
   height: 100vh;
   font-size: 1.25rem;
   color: var(--text-muted);
+  font-family: var(--font-heading);
 }
