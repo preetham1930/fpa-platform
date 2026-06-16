@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import VarianceDashboard from './VarianceDashboard';
 import ScenarioPlanning from './ScenarioPlanning';
+import ComparisonView from './ComparisonView';
 
 function App() {
-  const [view, setView] = useState<'variance' | 'scenario'>('variance');
+  const [view, setView] = useState<'variance' | 'scenario' | 'comparison'>('variance');
 
   return (
     <div className="dashboard-container">
@@ -39,9 +40,26 @@ function App() {
         >
           Scenario Planning
         </button>
+        <button 
+          onClick={() => setView('comparison')}
+          style={{
+            padding: '8px 16px',
+            borderRadius: '8px',
+            border: 'none',
+            fontWeight: 600,
+            cursor: 'pointer',
+            backgroundColor: view === 'comparison' ? 'var(--text)' : 'transparent',
+            color: view === 'comparison' ? 'var(--surface)' : 'var(--text-muted)',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          Comparison
+        </button>
       </div>
 
-      {view === 'variance' ? <VarianceDashboard /> : <ScenarioPlanning />}
+      {view === 'variance' && <VarianceDashboard />}
+      {view === 'scenario' && <ScenarioPlanning />}
+      {view === 'comparison' && <ComparisonView />}
     </div>
   );
 }

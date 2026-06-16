@@ -36,6 +36,21 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+const CustomXAxisTick = ({ x, y, payload }: any) => {
+  if (!payload || !payload.value) return null;
+  const parts = payload.value.split(' - ');
+  const dept = parts[0];
+  const acc = parts.slice(1).join(' - ');
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text x={0} y={0} dy={40} textAnchor="middle" fill="var(--text-muted)" fontSize={12}>
+        <tspan x={0} dy="0">{dept}</tspan>
+        {acc && <tspan x={0} dy="16">{acc}</tspan>}
+      </text>
+    </g>
+  );
+};
+
 export default function VarianceDashboard() {
   const [data, setData] = useState<VarianceReport | null>(null);
   const [loading, setLoading] = useState(true);
@@ -113,11 +128,12 @@ export default function VarianceDashboard() {
     if (!data) return [];
     
     const grouped = data.items.reduce((acc, item) => {
-      if (!acc[item.department]) {
-        acc[item.department] = { name: item.department, Budget: 0, Actual: 0 };
+      const key = `${item.department} - ${item.account}`;
+      if (!acc[key]) {
+        acc[key] = { name: key, Budget: 0, Actual: 0 };
       }
-      acc[item.department].Budget += item.budget;
-      acc[item.department].Actual += item.actual;
+      acc[key].Budget += item.budget;
+      acc[key].Actual += item.actual;
       return acc;
     }, {} as Record<string, { name: string, Budget: number, Actual: number }>);
     
@@ -177,19 +193,21 @@ export default function VarianceDashboard() {
 
       <div className="panel">
         <h2 className="panel-title">Department Overview</h2>
-        <div className="chart-container">
+        <div className="chart-container" style={{ height: '420px', paddingBottom: '10px' }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 20, right: 30, left: 20, bottom: 100 }}
               barGap={4}
             >
               <XAxis 
                 dataKey="name" 
                 stroke="var(--text-hint)" 
-                tick={{ fill: 'var(--text-muted)' }} 
+                tick={<CustomXAxisTick />}
                 axisLine={{ stroke: 'var(--border)' }}
                 tickLine={false}
+                interval={0}
+                tickMargin={20}
               />
               <YAxis 
                 stroke="var(--text-hint)" 
@@ -204,7 +222,8 @@ export default function VarianceDashboard() {
                 content={<CustomTooltip />}
               />
               <Legend 
-                wrapperStyle={{ paddingTop: '20px', color: 'var(--text-muted)' }} 
+                verticalAlign="top"
+                wrapperStyle={{ paddingBottom: '20px', color: 'var(--text-muted)' }} 
                 iconType="circle"
               />
               <Bar dataKey="Budget" fill="var(--bar-budget)" radius={[4, 4, 0, 0]} />

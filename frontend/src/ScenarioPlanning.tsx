@@ -51,7 +51,8 @@ export default function ScenarioPlanning() {
       setLoadingForecast(true);
       try {
         const drvRes = await axios.get<DriverValue[]>(`${API_BASE_URL}/scenarios/${activeScenarioId}/drivers`);
-        setDrivers(drvRes.data);
+        const sortedDrivers = drvRes.data.sort((a, b) => a.driver_id - b.driver_id);
+        setDrivers(sortedDrivers);
 
         fetchForecast(activeScenarioId);
       } catch (err) {
@@ -205,7 +206,7 @@ export default function ScenarioPlanning() {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
             {drivers.map(dv => (
-              <div key={dv.id} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div key={dv.id} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: '8px', minHeight: '90px' }}>
                 <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                   {dv.driver.label} ({dv.driver.unit})
                 </label>

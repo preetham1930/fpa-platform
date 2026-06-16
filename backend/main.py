@@ -134,7 +134,7 @@ def get_drivers(db: Session = Depends(get_db)):
 
 @app.get("/scenarios/{scenario_id}/drivers", response_model=List[schemas.DriverValueOut])
 def get_scenario_drivers(scenario_id: int, db: Session = Depends(get_db)):
-    return db.query(models.DriverValue).filter(models.DriverValue.scenario_id == scenario_id).all()
+    return db.query(models.DriverValue).filter(models.DriverValue.scenario_id == scenario_id).order_by(models.DriverValue.driver_id).all()
 
 @app.put("/scenarios/{scenario_id}/drivers/{driver_id}", response_model=schemas.DriverValueOut)
 def update_driver_value(scenario_id: int, driver_id: int, data: schemas.DriverValueUpdate, db: Session = Depends(get_db)):
