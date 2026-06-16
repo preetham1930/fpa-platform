@@ -40,14 +40,14 @@ def create_actual(actual: schemas.ActualLineCreate, db: Session = Depends(get_db
     return db_actual
 
 @app.get("/variance", response_model=schemas.VarianceReport)
-def get_variance_report(period: int, db: Session = Depends(get_db)):
+def get_variance_report(period: str, db: Session = Depends(get_db)):
     # Verify period exists
-    db_period = db.query(models.Period).filter(models.Period.id == period).first()
+    db_period = db.query(models.Period).filter(models.Period.name == period).first()
     if not db_period:
         raise HTTPException(status_code=404, detail="Period not found")
         
-    budgets = db.query(models.BudgetLine).filter(models.BudgetLine.period_id == period).all()
-    actuals = db.query(models.ActualLine).filter(models.ActualLine.period_id == period).all()
+    budgets = db.query(models.BudgetLine).filter(models.BudgetLine.period_id == db_period.id).all()
+    actuals = db.query(models.ActualLine).filter(models.ActualLine.period_id == db_period.id).all()
     
     # Pre-fetch for names
     departments = {d.id: d.name for d in db.query(models.Department).all()}

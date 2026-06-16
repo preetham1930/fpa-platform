@@ -24,7 +24,7 @@ def seed_db():
         db.add_all(depts)
         db.commit()
         
-        period = models.Period(name="2024-01", start_date=date(2024, 1, 1), end_date=date(2024, 1, 31))
+        period = models.Period(name="2026-05", start_date=date(2026, 5, 1), end_date=date(2026, 5, 31))
         db.add(period)
         db.commit()
         
