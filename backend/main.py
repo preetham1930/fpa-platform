@@ -7,6 +7,7 @@ from typing import List
 from backend import models, schemas
 from backend.database import engine, get_db
 from backend.services.variance import calculate_variance
+from backend.services.forecast import compute_forecast, forecast_vs_budget
 
 # Create database tables for Phase 1 locally
 models.Base.metadata.create_all(bind=engine)
@@ -93,3 +94,96 @@ def get_variance_report(period: int, db: Session = Depends(get_db)):
     items.sort(key=lambda x: (x.department, x.account))
         
     return schemas.VarianceReport(period=db_period.name, items=items)
+
+# --- Phase 2 Endpoints ---
+
+@app.get("/scenarios", response_model=List[schemas.ScenarioOut])
+def get_scenarios(db: Session = Depends(get_db)):
+    return db.query(models.Scenario).all()
+
+@app.post("/scenarios", response_model=schemas.ScenarioOut)
+def create_scenario(scenario: schemas.ScenarioCreate, db: Session = Depends(get_db)):
+    baseline = db.query(models.Scenario).filter(models.Scenario.is_baseline == True).first()
+    if not baseline:
+        raise HTTPException(status_code=400, detail="Baseline scenario not found. Cannot clone.")
+    
+    new_scenario = models.Scenario(
+        name=scenario.name,
+        description=scenario.description,
+        is_baseline=False
+    )
+    db.add(new_scenario)
+    db.commit()
+    db.refresh(new_scenario)
+
+    # Clone driver values from baseline
+    baseline_values = db.query(models.DriverValue).filter(models.DriverValue.scenario_id == baseline.id).all()
+    for dv in baseline_values:
+        new_dv = models.DriverValue(
+            driver_id=dv.driver_id,
+            scenario_id=new_scenario.id,
+            value=dv.value
+        )
+        db.add(new_dv)
+    db.commit()
+    return new_scenario
+
+@app.get("/drivers", response_model=List[schemas.DriverOut])
+def get_drivers(db: Session = Depends(get_db)):
+    return db.query(models.Driver).all()
+
+@app.get("/scenarios/{scenario_id}/drivers", response_model=List[schemas.DriverValueOut])
+def get_scenario_drivers(scenario_id: int, db: Session = Depends(get_db)):
+    return db.query(models.DriverValue).filter(models.DriverValue.scenario_id == scenario_id).all()
+
+@app.put("/scenarios/{scenario_id}/drivers/{driver_id}", response_model=schemas.DriverValueOut)
+def update_driver_value(scenario_id: int, driver_id: int, data: schemas.DriverValueUpdate, db: Session = Depends(get_db)):
+    dv = db.query(models.DriverValue).filter(
+        models.DriverValue.scenario_id == scenario_id,
+        models.DriverValue.driver_id == driver_id
+    ).first()
+    if not dv:
+        raise HTTPException(status_code=404, detail="Driver value not found")
+    dv.value = data.value
+    db.commit()
+    db.refresh(dv)
+    return dv
+
+@app.get("/forecast", response_model=schemas.ForecastReport)
+def get_forecast(scenario: int, period: str, db: Session = Depends(get_db)):
+    results = forecast_vs_budget(db, scenario, period)
+    return schemas.ForecastReport(scenario_id=scenario, period=period, items=results)
+
+@app.get("/forecast/compare", response_model=schemas.CompareReport)
+def compare_forecasts(scenarios: str, period: str, db: Session = Depends(get_db)):
+    scenario_ids = [int(s) for s in scenarios.split(",") if s.strip().isdigit()]
+    
+    all_results = {}
+    for sid in scenario_ids:
+        all_results[sid] = forecast_vs_budget(db, sid, period)
+        
+    pivoted = {}
+    for sid, items in all_results.items():
+        for item in items:
+            key = (item["department"], item["account"], item["account_type"], item["budget"])
+            if key not in pivoted:
+                pivoted[key] = {}
+            pivoted[key][sid] = {
+                "forecast": item["forecast"],
+                "variance": item["variance"],
+                "variance_percentage": item["variance_percentage"],
+                "is_favorable": item["is_favorable"]
+            }
+            
+    compare_items = []
+    for (dept, acc, acc_type, budget), scenario_dict in pivoted.items():
+        compare_items.append(schemas.CompareItem(
+            department=dept,
+            account=acc,
+            account_type=acc_type,
+            budget=budget,
+            scenarios=scenario_dict
+        ))
+        
+    compare_items.sort(key=lambda x: (x.department, x.account))
+    return schemas.CompareReport(period=period, items=compare_items)
