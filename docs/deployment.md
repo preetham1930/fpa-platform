@@ -35,6 +35,9 @@ This document records the specific infrastructure and configuration challenges e
 **Cause:** Cloud Run injects a `$PORT` environment variable (default 8080) that the container must bind to.
 **Fix:** Created a custom `nginx.conf.template` and implemented a Dockerfile entrypoint leveraging `envsubst '${PORT}'`. By restricting substitution strictly to `${PORT}`, Nginx's internal routing variables (`$uri`, `$host`) were preserved, allowing SPA `try_files` routing to function seamlessly.
 
+## 7. Phase 2 Deployment
+The cloud database was reset to a clean state for the Phase 2 schema additions. A dedicated `reset_db.py` script (`drop_all` + `create_all`) was run securely against the remote database via the Cloud SQL Auth Proxy. After re-seeding the data, the backend and frontend were redeployed live using the exact same deployment commands established in Phase 1.
+
 ---
 
 ## Additional Operational Notes
