@@ -155,3 +155,26 @@ class CompareItem(BaseModel):
 class CompareReport(BaseModel):
     period: str
     items: List[CompareItem]
+
+# Integration Schemas
+class SyncRunBase(BaseModel):
+    source: str
+    period: str
+
+from datetime import date, datetime
+
+class SyncRunOut(SyncRunBase):
+    id: int
+    status: str
+    records_fetched: int
+    records_synced: int
+    records_rejected: int
+    started_at: Optional[datetime] = None
+    finished_at: Optional[datetime] = None
+    error_detail: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class SyncRunDetail(SyncRunOut):
+    error_detail: Optional[str] = None

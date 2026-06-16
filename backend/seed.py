@@ -126,7 +126,20 @@ def seed_db():
             db.add(rule)
         db.commit()
 
-        print("Database seeded successfully with Phase 2 data!")
+        # Phase 3a Data (External Mappings)
+        mappings = [
+            models.ExternalMapping(source="SAP", entity_type="department", external_code="CC-ENG", internal_id=dept_ids["Engineering"]),
+            models.ExternalMapping(source="SAP", entity_type="department", external_code="CC-SALES", internal_id=dept_ids["Sales"]),
+            models.ExternalMapping(source="SAP", entity_type="department", external_code="CC-MKT", internal_id=dept_ids["Marketing"]),
+            models.ExternalMapping(source="SAP", entity_type="department", external_code="CC-HR", internal_id=dept_ids["HR"]),
+            models.ExternalMapping(source="SAP", entity_type="account", external_code="GL-SAL", internal_id=sal_id),
+            models.ExternalMapping(source="SAP", entity_type="account", external_code="GL-REV", internal_id=rev_id),
+            models.ExternalMapping(source="SAP", entity_type="account", external_code="GL-AD", internal_id=ad_id),
+        ]
+        db.add_all(mappings)
+        db.commit()
+
+        print("Database seeded successfully with Phase 2 and 3a data!")
     except Exception as e:
         db.rollback()
         print(f"Error seeding database: {e}")

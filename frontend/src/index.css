@@ -198,6 +198,11 @@ tbody tr:hover {
   background-color: var(--unfavorable-bg);
 }
 
+.accent-badge {
+  color: var(--accent);
+  background-color: var(--accent-soft);
+}
+
 .unfavorable-row {
   background-color: rgba(176, 57, 44, 0.04);
 }

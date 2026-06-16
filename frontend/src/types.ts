@@ -72,3 +72,23 @@ export interface CompareReport {
   period: string;
   items: CompareItem[];
 }
+
+export interface RejectedRecord {
+  record?: Record<string, any>;
+  reason?: string;
+  error?: string;
+}
+
+export interface SyncRun {
+  id: number;
+  source: string;
+  period: string;
+  status: 'success' | 'partial' | 'failed';
+  records_fetched: number;
+  records_synced: number;
+  records_rejected: number;
+  started_at: string | null;
+  finished_at: string | null;
+  error_detail: string | null;
+}
+

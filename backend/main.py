@@ -187,3 +187,28 @@ def compare_forecasts(scenarios: str, period: str, db: Session = Depends(get_db)
         
     compare_items.sort(key=lambda x: (x.department, x.account))
     return schemas.CompareReport(period=period, items=compare_items)
+
+# --- Phase 3a Endpoints ---
+
+from backend.services.integration import sync_actuals, MockSAPConnector
+
+@app.post("/integrations/erp/sync", response_model=schemas.SyncRunDetail)
+def trigger_erp_sync(period: str, db: Session = Depends(get_db)):
+    run = sync_actuals(db, period)
+    return run
+
+@app.get("/integrations/erp/runs", response_model=List[schemas.SyncRunOut])
+def get_erp_runs(db: Session = Depends(get_db)):
+    return db.query(models.SyncRun).order_by(models.SyncRun.started_at.desc()).all()
+
+@app.get("/integrations/erp/runs/{run_id}", response_model=schemas.SyncRunDetail)
+def get_erp_run(run_id: int, db: Session = Depends(get_db)):
+    run = db.query(models.SyncRun).filter(models.SyncRun.id == run_id).first()
+    if not run:
+        raise HTTPException(status_code=404, detail="Sync run not found")
+    return run
+
+@app.get("/integrations/erp/preview")
+def preview_erp_data(period: str):
+    connector = MockSAPConnector()
+    return connector.fetch_actuals(period)

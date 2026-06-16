@@ -1,6 +1,6 @@
 from datetime import date
 from enum import Enum as PyEnum
-from sqlalchemy import Column, Integer, String, Float, Date, Enum, ForeignKey, Boolean, Table, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Float, Date, DateTime, Enum, ForeignKey, Boolean, Table, UniqueConstraint
 from sqlalchemy.orm import relationship
 from backend.database import Base
 
@@ -54,6 +54,7 @@ class ActualLine(Base):
     period_id = Column(Integer, ForeignKey("periods.id"), nullable=False)
     account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
     amount = Column(Float, nullable=False)
+    source = Column(String, default="manual", nullable=False)
 
     department = relationship("Department", back_populates="actual_lines")
     period = relationship("Period", back_populates="actual_lines")
@@ -104,3 +105,26 @@ rule_driver_association = Table(
 )
 
 ForecastRule.drivers = relationship("Driver", secondary=rule_driver_association)
+
+class ExternalMapping(Base):
+    __tablename__ = "external_mappings"
+    id = Column(Integer, primary_key=True, index=True)
+    source = Column(String, nullable=False) # "SAP"
+    entity_type = Column(String, nullable=False) # "department" | "account"
+    external_code = Column(String, nullable=False)
+    internal_id = Column(Integer, nullable=False)
+
+    __table_args__ = (UniqueConstraint("source", "entity_type", "external_code", name="_external_mapping_uc"),)
+
+class SyncRun(Base):
+    __tablename__ = "sync_runs"
+    id = Column(Integer, primary_key=True, index=True)
+    source = Column(String, nullable=False)
+    period = Column(String, nullable=False)
+    status = Column(String, nullable=False) # "success" | "partial" | "failed"
+    records_fetched = Column(Integer, default=0, nullable=False)
+    records_synced = Column(Integer, default=0, nullable=False)
+    records_rejected = Column(Integer, default=0, nullable=False)
+    started_at = Column(DateTime, nullable=False)
+    finished_at = Column(DateTime)
+    error_detail = Column(String)
