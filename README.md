@@ -48,6 +48,7 @@ The system leverages a decoupled architecture. The React single-page application
 - **Interactive Scenario Modeling:** Supports distinct Base, Upside, and Downside scenarios with live what-if capabilities.
 - **Side-by-Side Comparison:** Unified table and chart views for analyzing multiple scenario outcomes concurrently.
 - **ERP/SAP Integration:** Ingests actuals from a mock SAP connector behind a swappable interface, with field mapping, idempotent upserts, partial-success validation, and an auditable sync log.
+- **Streaming Data Pipeline:** Synthetic transaction events are published to Cloud Pub/Sub, aggregated by an Apache Beam streaming pipeline into fixed 60-second windows (calculating sum and count per department/account), and written to BigQuery. The pipeline was verified on Dataflow with 50,000 events reconciled exactly.
 - **Separated KPIs:** High-level key performance indicator summaries that track total revenue and total cost independently.
 - **Premium Visualization:** A detailed dashboard featuring interactive charts and a comprehensive table, styled with a warm, "fintech" aesthetic design system.
 
@@ -88,10 +89,11 @@ Key architectural choices are documented in the [ADR Directory](docs/adr/). Key 
 - **Environment-Driven Connectivity:** Designing the database connection layer to dynamically switch between standard TCP routing for local development and secure Unix sockets when running in the cloud.
 - **Driver-Based Forecasting:** Modeling forecasts as a structured product of editable driver assumptions (rather than evaluated formula strings) to keep scenarios first-class and avoid an expression-injection surface — see [ADR-0002](docs/adr/0002-driver-based-forecasting.md).
 - **ERP Integration Path:** Abstracting the integration logic behind a swappable interface and implementing a fault-tolerant partial-success ingestion model — see [ADR-0003](docs/adr/0003-erp-integration.md).
+- **High-Volume Streaming Verification:** Documenting the end-to-end load testing and correctness reconciliation of the Dataflow streaming pipeline — see the [Scale Report](docs/scale-report.md).
 
 ## Roadmap
 
 - **Phase 1:** Core application and cloud deployment (Complete).
 - **Phase 2:** Driver-based forecasting and advanced scenario modeling (Complete).
 - **Phase 3:** ERP/SAP integration layer for automated synchronization (Complete).
-- **Phase 4:** High-throughput data pipeline (Pub/Sub -> Dataflow -> BigQuery) designed to handle millions of events per day.
+- **Phase 4:** High-throughput data pipeline (Pub/Sub -> Dataflow -> BigQuery) designed to handle millions of events per day (Complete).
