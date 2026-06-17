@@ -1,6 +1,6 @@
 # FP&A Variance Platform
 
-> An internal financial planning & analysis tool that computes budget-vs-actual variance, handles driver-based forecasting, and supports interactive scenario modeling (Base/Upside/Downside) for live what-if analysis.
+> An internal financial planning & analysis tool that computes budget-vs-actual variance, handles driver-based forecasting, supports interactive scenario modeling, and features a robust ERP/SAP integration layer for automated ingestion of actuals.
 
 **Live demo:** https://fpa-frontend-1029461300479.asia-south1.run.app
 
@@ -15,6 +15,12 @@ The FP&A Variance Platform represents the kind of robust, internal financial too
 ![Comparison View](docs/comparison.png)
 
 The platform features an interactive scenario modeling engine. Forecasts are dynamically computed from a set of editable driver assumptions, allowing analysts to simulate what-if scenarios (e.g., Upside vs. Downside) and compare them side-by-side against the locked baseline.
+
+### ERP / SAP Integration
+
+![Integration Hub](docs/integrations.png)
+
+A fault-tolerant integration layer ingests actuals from a (mock) SAP source. This pipeline features strict field mapping to resolve external identifiers, idempotent upserts to safely run synchronizations multiple times, and an auditable sync log that prominently surfaces partial-success validation errors.
 
 ## Architecture
 
@@ -41,6 +47,7 @@ The system leverages a decoupled architecture. The React single-page application
 - **Driver-Based Forecasting:** Dynamically computes forecasts using a structured product-model of driver assumptions.
 - **Interactive Scenario Modeling:** Supports distinct Base, Upside, and Downside scenarios with live what-if capabilities.
 - **Side-by-Side Comparison:** Unified table and chart views for analyzing multiple scenario outcomes concurrently.
+- **ERP/SAP Integration:** Ingests actuals from a mock SAP connector behind a swappable interface, with field mapping, idempotent upserts, partial-success validation, and an auditable sync log.
 - **Separated KPIs:** High-level key performance indicator summaries that track total revenue and total cost independently.
 - **Premium Visualization:** A detailed dashboard featuring interactive charts and a comprehensive table, styled with a warm, "fintech" aesthetic design system.
 
@@ -80,10 +87,11 @@ Key architectural choices are documented in the [ADR Directory](docs/adr/). Key 
 - **Migrations:** Utilizing SQLAlchemy's `create_all` for rapid prototyping in Phase 1, with the explicit intent to migrate to Alembic once the data model matures and persistent schema evolution becomes necessary.
 - **Environment-Driven Connectivity:** Designing the database connection layer to dynamically switch between standard TCP routing for local development and secure Unix sockets when running in the cloud.
 - **Driver-Based Forecasting:** Modeling forecasts as a structured product of editable driver assumptions (rather than evaluated formula strings) to keep scenarios first-class and avoid an expression-injection surface — see [ADR-0002](docs/adr/0002-driver-based-forecasting.md).
+- **ERP Integration Path:** Abstracting the integration logic behind a swappable interface and implementing a fault-tolerant partial-success ingestion model — see [ADR-0003](docs/adr/0003-erp-integration.md).
 
 ## Roadmap
 
 - **Phase 1:** Core application and cloud deployment (Complete).
 - **Phase 2:** Driver-based forecasting and advanced scenario modeling (Complete).
-- **Phase 3:** ERP/SAP integration layer for automated synchronization.
+- **Phase 3:** ERP/SAP integration layer for automated synchronization (Complete).
 - **Phase 4:** High-throughput data pipeline (Pub/Sub -> Dataflow -> BigQuery) designed to handle millions of events per day.

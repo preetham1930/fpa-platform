@@ -38,6 +38,9 @@ This document records the specific infrastructure and configuration challenges e
 ## 7. Phase 2 Deployment
 The cloud database was reset to a clean state for the Phase 2 schema additions. A dedicated `reset_db.py` script (`drop_all` + `create_all`) was run securely against the remote database via the Cloud SQL Auth Proxy. After re-seeding the data, the backend and frontend were redeployed live using the exact same deployment commands established in Phase 1.
 
+## 8. Phase 3 Deployment
+The cloud DB was reset and re-seeded via the Cloud SQL Auth Proxy to pick up the new integration tables (`ExternalMapping`, `SyncRun`) and the new `ActualLine.source` column. Afterward, the backend and frontend were redeployed to make the ERP Integration layer live.
+
 ---
 
 ## Additional Operational Notes
