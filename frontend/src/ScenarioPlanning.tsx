@@ -13,6 +13,7 @@ export default function ScenarioPlanning() {
   const [loadingDrivers, setLoadingDrivers] = useState(false);
   const [loadingForecast, setLoadingForecast] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [editValues, setEditValues] = useState<Record<number, string>>({});
 
   const activeScenario = scenarios.find(s => s.id === activeScenarioId);
   const isBaseline = activeScenario?.is_baseline ?? true;
@@ -53,6 +54,7 @@ export default function ScenarioPlanning() {
         const drvRes = await axios.get<DriverValue[]>(`${API_BASE_URL}/scenarios/${activeScenarioId}/drivers`);
         const sortedDrivers = drvRes.data.sort((a, b) => a.driver_id - b.driver_id);
         setDrivers(sortedDrivers);
+        setEditValues({});
 
         fetchForecast(activeScenarioId);
       } catch (err) {
@@ -85,26 +87,19 @@ export default function ScenarioPlanning() {
 
   // 3. Handle Driver Edit
   const handleDriverChange = (driverId: number, newValueStr: string) => {
-    const newValue = parseFloat(newValueStr) || 0;
-
-    // Optimistically update local state
-    setDrivers(prev => prev.map(d => 
-      d.driver_id === driverId ? { ...d, value: newValue } : d
-    ));
-
-    // Debounce the API call
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
+    // keep raw text so the field can be cleared and shows exactly what's typed
+    setEditValues(prev => ({ ...prev, [driverId]: newValueStr }));
+    const numValue = newValueStr === '' ? 0 : parseFloat(newValueStr);
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     debounceTimerRef.current = window.setTimeout(async () => {
       if (activeScenarioId === null) return;
+      const valueToSend = isNaN(numValue) ? 0 : numValue;
       try {
         setIsUpdating(true);
-        await axios.put(`${API_BASE_URL}/scenarios/${activeScenarioId}/drivers/${driverId}`, {
-          value: newValue
-        });
-        // Refetch forecast to get updated math
+        await axios.put(
+          `${API_BASE_URL}/scenarios/${activeScenarioId}/drivers/${driverId}`,
+          { value: valueToSend }
+        );
         await fetchForecast(activeScenarioId);
       } catch (err) {
         console.error("Error updating driver", err);
@@ -212,7 +207,7 @@ export default function ScenarioPlanning() {
                 </label>
                 <input 
                   type="number" 
-                  value={dv.value}
+                  value={editValues[dv.driver.id] ?? String(dv.value)}
                   disabled={isBaseline}
                   onChange={(e) => handleDriverChange(dv.driver.id, e.target.value)}
                   style={{
