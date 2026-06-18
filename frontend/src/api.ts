@@ -20,3 +20,13 @@ export const getErpRuns = async (): Promise<SyncRun[]> => {
   }
   return response.json();
 };
+
+import type { TransactionInsightsReport } from './types';
+
+export const getTransactionInsights = async (): Promise<TransactionInsightsReport> => {
+  const response = await fetch(`${API_BASE_URL}/analytics/transactions`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch transaction insights');
+  }
+  return response.json();
+};

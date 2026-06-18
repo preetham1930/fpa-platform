@@ -212,3 +212,55 @@ def get_erp_run(run_id: int, db: Session = Depends(get_db)):
 def preview_erp_data(period: str):
     connector = MockSAPConnector()
     return connector.fetch_actuals(period)
+
+# --- Phase 4 Endpoints ---
+
+from google.cloud import bigquery
+
+BQ_PROJECT = "fpa-platform"
+BQ_DATASET = "fpa_analytics"
+BQ_TABLE = "transaction_aggregates"
+
+@app.get("/analytics/transactions", response_model=schemas.TransactionInsightsResponse)
+def get_transaction_insights():
+    try:
+        client = bigquery.Client(project=BQ_PROJECT)
+        query = f"""
+        SELECT department, account, SUM(total_amount) AS total_amount, SUM(event_count) AS event_count
+        FROM `{BQ_PROJECT}.{BQ_DATASET}.{BQ_TABLE}`
+        GROUP BY department, account
+        ORDER BY department, account
+        """
+        query_job = client.query(query)
+        rows = query_job.result()
+        
+        aggregates = []
+        total_amount = 0.0
+        total_events = 0
+        
+        for row in rows:
+            amount = float(row.total_amount) if row.total_amount else 0.0
+            count = int(row.event_count) if row.event_count else 0
+            
+            aggregates.append(schemas.TransactionAggregate(
+                department=row.department,
+                account=row.account,
+                total_amount=amount,
+                event_count=count
+            ))
+            total_amount += amount
+            total_events += count
+            
+        return schemas.TransactionInsightsResponse(
+            total_events=total_events,
+            total_amount=total_amount,
+            aggregates=aggregates
+        )
+    except Exception as e:
+        print(f"Failed to query BigQuery: {e}")
+        # Return graceful empty state
+        return schemas.TransactionInsightsResponse(
+            total_events=0,
+            total_amount=0.0,
+            aggregates=[]
+        )

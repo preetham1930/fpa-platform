@@ -92,3 +92,16 @@ export interface SyncRun {
   error_detail: string | null;
 }
 
+export interface TransactionAggregate {
+  department: string;
+  account: string;
+  total_amount: number;
+  event_count: number;
+}
+
+export interface TransactionInsightsReport {
+  total_events: number;
+  total_amount: number;
+  aggregates: TransactionAggregate[];
+}
+

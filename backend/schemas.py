@@ -176,5 +176,16 @@ class SyncRunOut(SyncRunBase):
     class Config:
         from_attributes = True
 
+class TransactionAggregate(BaseModel):
+    department: str
+    account: str
+    total_amount: float
+    event_count: int
+
+class TransactionInsightsResponse(BaseModel):
+    total_events: int
+    total_amount: float
+    aggregates: List[TransactionAggregate]
+
 class SyncRunDetail(SyncRunOut):
     error_detail: Optional[str] = None
