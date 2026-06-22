@@ -1,5 +1,7 @@
 # FP&A Variance Platform
 
+![CI](https://github.com/preetham1930/fpa-platform/actions/workflows/ci.yml/badge.svg)
+
 > An internal financial planning & analysis tool that computes budget-vs-actual variance, handles driver-based forecasting, supports interactive scenario modeling, and features a robust ERP/SAP integration layer for automated ingestion of actuals.
 
 **Live demo:** https://fpa-frontend-1029461300479.asia-south1.run.app
