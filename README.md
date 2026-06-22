@@ -59,6 +59,8 @@ The app ships as five modules:
 
 **Transaction insights** - reads the pipeline's BigQuery aggregates back into the app, so the streaming work is visible and clickable in the live demo.
 
+![Transaction insights](docs/insights.png)
+
 ## Tech stack
 
 - **Frontend:** React, Vite, TypeScript, Recharts
