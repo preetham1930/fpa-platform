@@ -71,13 +71,18 @@ table before sending, and the pipeline's BigQuery output must match it exactly.
 
 | Department / Account | Events | Total (USD) |
 |---|---|---|
-| Engineering / Salaries | 8,287 | 20,988,930.29 |
-| HR / Salaries | 8,406 | 21,175,795.62 |
-| Marketing / Ad Spend | 8,283 | 20,952,570.33 |
-| Marketing / Salaries | 8,389 | 21,181,685.85 |
-| Sales / Salaries | 8,331 | 20,871,616.09 |
-| Sales / Software Subscriptions | 8,304 | 41,595,902.99 |
-| **Total** | **50,000** | **146,766,501.17** |
+| Engineering / Salaries | 8,402 | 21,216,827.28 |
+| HR / Salaries | 8,335 | 21,176,661.33 |
+| Marketing / Ad Spend | 8,328 | 21,024,296.99 |
+| Marketing / Salaries | 8,151 | 20,462,506.77 |
+| Sales / Salaries | 8,305 | 20,965,933.54 |
+| Sales / Software Subscriptions | 8,479 | 42,911,367.53 |
+| **Total** | **50,000** | **147,757,593.44** |
+
+*The table is from the most recent 50,000-event Dataflow run (30 Oct 2026, after the demo
+moved to a new Google Cloud project); its BigQuery output is what the live demo's
+Transaction Insights tab reads. Amounts are random per run, so each run has different
+totals; every run is checked the same way, against the publisher's ground truth.*
 
 ## Measured performance
 
