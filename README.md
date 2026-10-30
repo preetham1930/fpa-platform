@@ -5,7 +5,7 @@
 
 A full-stack financial planning & analysis platform: it computes budget-vs-actual variance with correct revenue/cost accounting logic, models driver-based forecast scenarios, ingests actuals through a fault-tolerant ERP/SAP integration, and runs a streaming data pipeline that was load-tested on Google Cloud Dataflow at **~724 events/sec**, with **50,000 events reconciled to the cent and zero loss**.
 
-**[Live demo](https://fpa-frontend-1029461300479.asia-south1.run.app)** | **[Live API explorer](https://fpa-backend-1029461300479.asia-south1.run.app/docs)** | **[Architecture](#architecture)** | **[Scale report](docs/scale-report.md)**
+**[Live demo](https://fpa-frontend-213737647188.asia-south1.run.app)** | **[Live API explorer](https://fpa-backend-213737647188.asia-south1.run.app/docs)** | **[Architecture](#architecture)** | **[Scale report](docs/scale-report.md)**
 
 *The demo is public and read-only. Pipeline figures come from the bounded load test documented in the scale report, not live production traffic.*
 

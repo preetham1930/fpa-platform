@@ -217,7 +217,8 @@ def preview_erp_data(period: str):
 
 from google.cloud import bigquery
 
-BQ_PROJECT = "fpa-platform"
+import os
+BQ_PROJECT = os.getenv("BQ_PROJECT", "fpa-platform")
 BQ_DATASET = "fpa_analytics"
 BQ_TABLE = "transaction_aggregates"
 
